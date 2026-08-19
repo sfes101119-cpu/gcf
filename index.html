@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GCF - FOCA 認證培訓課程 (首頁優化版)</title>
+  <style>
+    /* 基礎設定 */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang TC', '微軟正黑體', sans-serif;
+      color: #333;
+      background-color: #faf8f5;
+      line-height: 1.6;
+    }
+
+    /* ======== 新增：頂部功能列 ======== */
+    .top-bar {
+      background-color: #111;
+      color: #fff;
+      font-size: 0.85em;
+      padding: 8px 5%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 15px;
+    }
+    .top-bar a {
+      color: #ddd;
+      text-decoration: none;
+      transition: color 0.2s;
+      letter-spacing: 1px;
+    }
+    .top-bar a:hover { color: cyan; }
+    .top-bar span {
+      color: #555;
+      font-size: 0.8em;
+    }
+    /* =================================== */
+
+    /* 普普風半色調網點底紋 (Halftone) */
+    .halftone-bg {
+      background-color: #faf8f5;
+      background-image: radial-gradient(#d5d5d5 1.5px, transparent 1.5px);
+      background-size: 15px 15px;
+    }
+
+    /* CMYK 錯位特效 (Hover & Title) */
+    .cmyk-glitch {
+      position: relative;
+      display: inline-block;
+      color: #111;
+      font-weight: 900;
+    }
+    .cmyk-glitch::before, .cmyk-glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: -1;
+    }
+    .cmyk-glitch:hover::before {
+      opacity: 0.8;
+      transform: translate(-3px, -2px);
+      color: cyan;
+    }
+    .cmyk-glitch:hover::after {
+      opacity: 0.8;
+      transform: translate(3px, 2px);
+      color: magenta;
+    }
+
+    /* 導覽列 */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 5%;
+      background: #ffffff;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 3px solid #111;
+    }
+    .logo {
+      font-size: 1.5em;
+      font-weight: 900;
+      text-decoration: none;
+      color: #111;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo span {
+      font-size: 0.6em;
+      background: #111;
+      color: yellow;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 30px;
+      margin: 0;
+      padding: 0;
+    }
+    nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+      transition: color 0.2s;
+      position: relative;
+    }
+    nav a:hover { color: magenta; }
+    nav a::after {
+      content: '';
+      position: absolute;
+      width: 0; height: 2px;
+      bottom: -5px; left: 0;
+      background-color: cyan;
+      transition: width 0.3s;
+    }
+    nav a:hover::after { width: 100%; }
+
+    /* 按鈕設計 */
+    .btn {
+      display: inline-block;
+      padding: 15px 40px;
+      background: #111;
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.1em;
+      font-weight: bold;
+      border: 2px solid #111;
+      border-radius: 0;
+      transition: all 0.3s;
+      box-shadow: 5px 5px 0px cyan;
+    }
+    .btn:hover {
+      background: #fff;
+      color: #111;
+      box-shadow: 5px 5px 0px magenta;
+      transform: translate(-2px, -2px);
+    }
+
+    /* 區塊共用設定 */
+    section { padding: 100px 5%; }
+    .section-title {
+      font-size: 2.5em;
+      text-align: center;
+      margin-bottom: 60px;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    /* ======== 修改：主視覺區塊 (滿版背景圖片) ======== */
+    .hero {
+      text-align: center;
+      padding: 160px 20px; /* 增加上下留白讓背景圖範圍變大 */
+      position: relative;
+      border-bottom: 5px solid #111;
+
+      /* 設定背景圖 */
+      background-image: url('https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=1920&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed; /* 視差滾動效果 */
+    }
+    /* 加上一層半透明的紙張色遮罩，確保文字與普普風特效清晰可見 */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(250, 248, 245, 0.85);
+      z-index: 1;
+    }
+    /* 讓文字與按鈕浮在遮罩之上 */
+    .hero h1, .hero p, .hero .btn {
+      position: relative;
+      z-index: 2;
+    }
+    /* ==================================================== */
+
+    .hero h1 {
+      font-size: 3.5em;
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+    .hero p {
+      font-size: 1.2em;
+      color: #333;
+      font-weight: bold;
+      max-width: 700px;
+      margin: 0 auto 40px auto;
+    }
+
+    /* 網格卡片佈局 (模組化區塊) */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #fff;
+      padding: 40px 30px;
+      border: 2px solid #111;
+      border-top: 8px solid cyan;
+      box-shadow: 8px 8px 0px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 8px 15px 0px yellow;
+    }
+    .card h3 {
+      font-size: 1.5em;
+      margin-top: 0;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 15px;
+    }
+
+    /* 理念區塊 (深色反轉) */
+    .dark-bg {
+      background: #111;
+      color: #fff;
+    }
+    .dark-bg .section-title { color: yellow; }
+    .dark-bg .card {
+      background: #222;
+      border-color: #444;
+      border-top-color: magenta;
+      color: #ddd;
+      box-shadow: 8px 8px 0px #000;
+    }
+    .dark-bg .card:hover {
+      box-shadow: 8px 15px 0px cyan;
+    }
+    .dark-bg .card h3 {
+      color: #fff;
+      border-bottom-color: #444;
+    }
+
+    /* 頁尾 */
+    footer {
+      background: #000;
+      color: #888;
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 5px solid cyan;
+    }
+
+    @media (max-width: 768px) {
+      nav ul { display: none; /* 簡化手機版展示 */ }
+      .hero h1 { font-size: 2.2em; }
+      .top-bar { justify-content: center; }
+      section { padding: 60px 5%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ======== 頂部功能列 ======== -->
+<div class="top-bar">
+  <a href="sitemap.html">網站導覽</a>
+  <span>|</span>
+  <a href="downloads.html">檔案下載</a>
+  <span>|</span>
+  <a href="faq.html">常見問答</a>
+</div>
+
+<!-- 導覽列 -->
+<nav>
+  <a href="#" class="logo">GCF <span>FOCA</span></a>
+  <ul>
+    <li><a href="index.html">回首頁</a></li>
+    <li><a href="about.html">關於基金會</a></li>
+    <li><a href="courses.html">培訓課程</a></li>
+    <li><a href="blog.html">部落格</a></li>
+    <li><a href="cert.html">認證名單</a></li>
+    <li><a href="#">聯絡我們</a></li>
+  </ul>
+</nav>
+
+<!-- ======== 修改：主視覺區塊 (滿版背景圖) ======== -->
+<!-- 移除了 halftone-bg，改由 CSS 中的背景圖與遮罩控制 -->
+<section class="hero">
+  <h1 class="cmyk-glitch" data-text="X-Rite Pantone FOCA 認證培訓課程">
+    X-Rite Pantone FOCA<br>認證培訓課程
+  </h1>
+  <p>
+    色彩與外觀基本原理認證培訓，2026年課程將協同西北影像，舉辦第四屆培訓課程。為台灣設計師與印刷供應商建立穩固的色彩科學基礎！
+  </p>
+  <a href="#" class="btn">2026 開放報名</a>
+</section>
+
+<!-- 區塊二：培訓對象 (Core Target) -->
+<section>
+  <h2 class="section-title cmyk-glitch" data-text="培訓對象">培訓對象</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>平面與包裝設計師</h3>
+      <p>從顯示器中看到的設計稿到最終成品，學習如何量化控制色彩，確保跨媒材的視覺一致性。</p>
+    </div>
+    <div class="card" style="border-top-color: magenta;">
+      <h3>工業與產品設計師</h3>
+      <p>針對不同材質與光源環境，掌握影響色彩感知的物理與環境複雜性，做出精準設計決策。</p>
+    </div>
+    <div class="card" style="border-top-color: yellow;">
+      <h3>品牌商與印刷供應商</h3>
+      <p>建立統一的色彩溝通語言，透過客觀數據檢核標準，減少供應鏈中對色彩預期的落差與爭議。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 區塊三：色彩科學理念 (Concept - 深色區塊) -->
+<section class="dark-bg">
+  <h2 class="section-title">如何說顏色的語言？</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>主觀 vs. 準確</h3>
+      <p>我們看到顏色、感受顏色。在腦海中形成畫面並用詞語描述。但傳達顏色非常主觀，FOCA 將教授如何透過「數字」傳達準確的顏色。</p>
+    </div>
+    <div class="card" style="border-top-color: cyan;">
+      <h3>光不僅是照明，是顏色</h3>
+      <p>光是能量，光的顏色決定了我們感知的顏色。了解從光、物體和觀察者之間的相互作用，以及如何在適當光源下評估。</p>
+    </div>
+    <div class="card" style="border-top-color: yellow;">
+      <h3>色彩科學的歷史</h3>
+      <p>從 Munsell 色彩空間、人類視覺非線性模型，到 CIE 的 L*a*b*。了解歷史對於理解為何以今日方式處理色彩至關重要。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 區塊四：互動學習教具 (Equipment) -->
+<section class="halftone-bg" style="border-top: 3px solid #111;">
+  <h2 class="section-title cmyk-glitch" data-text="實作與互動學習教具">實作與互動學習教具</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>同時對比套件</h3>
+      <p>Simultaneous Contrast Kit：說明周圍顏色如何影響視覺評估的感知，體驗視錯覺的影響。</p>
+    </div>
+    <div class="card" style="border-top-color: magenta;">
+      <h3>孟賽爾色塊練習</h3>
+      <p>Munsell Student Color Set：親手操作色票，練習評估色相 (Hue)、明度 (Value)、彩度 (Chroma)。</p>
+    </div>
+    <div class="card" style="border-top-color: yellow;">
+      <h3>絕對色度套件</h3>
+      <p>CIELAB Absolute Kit：以三維色彩空間圖形顯示 L*a*b* 值，理解顏色差異的量化計算。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 頁尾 -->
+<footer>
+  <p>電子郵件：123@gmail.com | 執行單位：印刷傳播興才文教基金會</p>
+  <p>Copyright &copy; 2026 GCF All rights reserved.</p>
+</footer>
+
+</body>
+</html>

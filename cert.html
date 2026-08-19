@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>認證名單 - GCF</title>
+  <style>
+    /* 變數與共用設定 */
+    :root {
+      --paper-bg: #f5f4ef;
+      --ink-magenta: #e94e8f;
+      --ink-cyan: #26b2cc;
+      --ink-yellow: #f8df1c;
+      --ink-darkblue: #3d3e8e;
+      --ink-black: #2a2a2a;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang TC', '微軟正黑體', sans-serif;
+      color: var(--ink-black);
+      background-color: var(--paper-bg);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.06'/%3E%3C/svg%3E");
+      line-height: 1.8;
+    }
+
+    /* 頂部功能列 */
+    .top-bar {
+      background-color: var(--ink-black);
+      color: #fff;
+      font-size: 0.85em;
+      padding: 8px 5%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 15px;
+    }
+    .top-bar a { color: #ddd; text-decoration: none; transition: color 0.2s; letter-spacing: 1px; }
+    .top-bar a:hover { color: var(--ink-yellow); }
+    .top-bar span { color: #777; font-size: 0.8em; }
+
+    /* 導覽列 */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 5%;
+      background: rgba(245, 244, 239, 0.95);
+      backdrop-filter: blur(5px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 2px solid var(--ink-black);
+    }
+    .logo {
+      font-size: 1.5em;
+      font-weight: 900;
+      text-decoration: none;
+      color: var(--ink-black);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    nav ul { list-style: none; display: flex; gap: 30px; margin: 0; padding: 0; }
+    nav a {
+      text-decoration: none;
+      color: var(--ink-black);
+      font-weight: bold;
+      position: relative;
+      padding-bottom: 5px;
+    }
+    nav a::after {
+      content: ''; position: absolute; width: 100%; height: 4px; bottom: 0; left: 0;
+      background-color: var(--ink-yellow); transform: scaleX(0); transform-origin: right;
+      transition: transform 0.3s ease; mix-blend-mode: multiply;
+    }
+    nav a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+    /* 版畫錯位特效 */
+    .print-glitch {
+      position: relative; display: inline-block; font-weight: 900; color: var(--ink-black); z-index: 2;
+    }
+    .print-glitch::before, .print-glitch::after {
+      content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; z-index: -1; mix-blend-mode: multiply;
+    }
+    .print-glitch:hover::before { opacity: 0.9; transform: translate(-4px, -3px); color: var(--ink-cyan); }
+    .print-glitch:hover::after { opacity: 0.9; transform: translate(4px, 3px); color: var(--ink-magenta); }
+
+    /* 頁面標題區塊 */
+    .page-header {
+      padding: 100px 5% 80px;
+      text-align: center;
+      border-bottom: 5px solid var(--ink-black);
+      position: relative;
+      background-image: url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1920&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+    .page-header::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(250, 248, 245, 0.9); z-index: 1;
+    }
+    .page-header h1 { font-size: 3.5em; margin: 0 0 30px 0; position: relative; z-index: 2; }
+
+    .anchor-nav {
+      position: relative; z-index: 2; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;
+    }
+    .anchor-btn {
+      display: inline-block; padding: 12px 30px; background: #fff; color: var(--ink-black);
+      text-decoration: none; font-weight: bold; font-size: 1.1em;
+      border: 2px solid var(--ink-black); border-radius: 50px;
+      box-shadow: 4px 4px 0px var(--ink-cyan); transition: all 0.3s;
+    }
+    .anchor-btn:nth-child(2) { box-shadow: 4px 4px 0px var(--ink-magenta); }
+    .anchor-btn:hover {
+      transform: translate(-3px, -3px); box-shadow: 7px 7px 0px var(--ink-yellow);
+      background: var(--ink-black); color: var(--paper-bg);
+    }
+
+    /* 內容區塊 */
+    section { padding: 80px 3%; margin: 0 auto; max-width: 1200px; scroll-margin-top: 100px; }
+    .section-title { font-size: 2.2em; margin-bottom: 40px; font-weight: 900; border-left: 8px solid var(--ink-black); padding-left: 15px; }
+
+    /* 表格外框容器 */
+    .cert-container {
+      background: #fff;
+      padding: 30px;
+      border: 2px solid var(--ink-black);
+      position: relative;
+      margin-bottom: 60px;
+      overflow-x: auto;
+    }
+    .cert-container::before {
+      content: ''; position: absolute; top: 12px; left: 12px; width: 100%; height: 100%;
+      border: 2px solid var(--ink-black); z-index: -1;
+    }
+    .cert-foca::before { background: var(--ink-cyan); }
+    .cert-g7::before { background: var(--ink-magenta); }
+
+    /* 表格樣式 */
+    .cert-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+    .cert-table th, .cert-table td {
+      border: 1px solid var(--ink-black);
+      padding: 15px 20px;
+      text-align: left;
+    }
+    .cert-table th {
+      background-color: var(--ink-black);
+      color: #fff;
+      font-size: 1.1em;
+      position: sticky;
+      top: 0;
+    }
+    .cert-table tr:nth-child(even) { background-color: var(--paper-bg); }
+    .cert-table tr:hover { background-color: #fffde7; } /* 淺粉色懸停 */
+    .cert-table a {
+      color: var(--ink-magenta);
+      font-weight: bold;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .cert-table a:hover {
+      color: var(--ink-cyan);
+      border-bottom-color: var(--ink-cyan);
+    }
+
+    footer { background: var(--ink-black); color: #aaa; text-align: center; padding: 40px 20px; border-top: 5px solid var(--ink-black); }
+  </style>
+</head>
+<body>
+
+<!-- 頂部功能列 -->
+<div class="top-bar">
+  <a href="sitemap.html">網站導覽</a><span>|</span>
+  <a href="downloads.html">檔案下載</a><span>|</span>
+  <a href="faq.html">常見問答</a>
+</div>
+
+<!-- 導覽列 -->
+<nav>
+  <a href="index.html" class="logo">GCF FOCA</a>
+  <ul>
+    <li><a href="index.html">回首頁</a></li>
+    <li><a href="about.html">關於基金會</a></li>
+    <li><a href="courses.html">培訓課程</a></li>
+    <li><a href="blog.html">部落格</a></li>
+    <li><a href="cert.html">認證名單</a></li>
+    <li><a href="contact.html">聯絡我們</a></li>
+  </ul>
+</nav>
+
+<!-- 頁面標題 & 錨點選單 -->
+<header class="page-header">
+  <h1 class="print-glitch" data-text="認證專家名單">認證專家名單</h1>
+  <div class="anchor-nav">
+    <a href="#foca" class="anchor-btn">FOCA 歷屆名單</a>
+    <a href="#g7" class="anchor-btn">G7 認證名單</a>
+  </div>
+</header>
+
+<!-- FOCA 認證名單區塊 -->
+<section id="foca">
+  <h2 class="section-title" style="border-left-color: var(--ink-cyan);">FOCA 歷屆認證專家名單</h2>
+  <div class="cert-container cert-foca">
+    <table class="cert-table">
+      <thead>
+      <tr>
+        <th>姓名</th>
+        <th>公司 / 單位</th>
+        <th>證書</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>劉應讀</td><td>彩碩企業社</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="劉應讀 的證書">查看證書</a></td></tr>
+      <tr><td>易建成</td><td>建樺群業</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="易建成 的證書">查看證書</a></td></tr>
+      <tr><td>李佳豪</td><td>佳桓色彩科技</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="李佳豪 的證書">查看證書</a></td></tr>
+      <tr><td>李沛垚</td><td>銓宇揚</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="李沛垚 的證書">查看證書</a></td></tr>
+      <tr><td>李瑩貞</td><td>攝影人數位影像製作</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="李瑩貞 的證書">查看證書</a></td></tr>
+      <tr><td>林俊杰</td><td>力盛彩色印刷</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="林俊杰 的證書">查看證書</a></td></tr>
+      <tr><td>汪鉦祺</td><td>台灣國際航電 GARMIN</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="汪鉦祺 的證書">查看證書</a></td></tr>
+      <tr><td>洪忠源</td><td>麥思印刷整合</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="洪忠源 的證書">查看證書</a></td></tr>
+      <tr><td>許均揚</td><td>晁勤企業</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="許均揚 的證書">查看證書</a></td></tr>
+      <tr><td>鄭絮文</td><td>秋雨創新</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="鄭絮文 的證書">查看證書</a></td></tr>
+      <tr><td>黃穎慈</td><td>康鈦科技</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="黃穎慈 的證書">查看證書</a></td></tr>
+      <tr><td>楊翔名</td><td>世偉顏料實業</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="楊翔名 的證書">查看證書</a></td></tr>
+      <tr><td>陳登維</td><td>卡之屋網路科技印刷</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="陳登維 的證書">查看證書</a></td></tr>
+      <tr><td>陳建勳</td><td>卡之屋網路科技印刷</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="陳建勳 的證書">查看證書</a></td></tr>
+      <tr><td>陳靖宜</td><td>卡之屋網路科技印刷</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="陳靖宜 的證書">查看證書</a></td></tr>
+      <tr><td>黃正雄</td><td>卡之屋網路科技印刷</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="黃正雄 的證書">查看證書</a></td></tr>
+      <tr><td>陳冠如</td><td>仁寶電腦工業</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="陳冠如 的證書">查看證書</a></td></tr>
+      <tr><td>温佳瑜</td><td>療癒兔工作室</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="温佳瑜 的證書">查看證書</a></td></tr>
+      <tr><td>李明哲</td><td>川聚企業</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="李明哲 的證書">查看證書</a></td></tr>
+      <tr><td>黃美琦</td><td>正隆印刷器材</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="黃美琦 的證書">查看證書</a></td></tr>
+      <tr><td>蕭言軒</td><td>YXD 設計工作室</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="蕭言軒 的證書">查看證書</a></td></tr>
+      <tr><td>陳妍廷</td><td>-</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="陳妍廷 的證書">查看證書</a></td></tr>
+      <tr><td>陳靖儀</td><td>力盛彩色印刷</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="陳靖儀 的證書">查看證書</a></td></tr>
+      <tr><td>饒瑞峪</td><td>臺灣永光化學</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="饒瑞峪 的證書">查看證書</a></td></tr>
+      <tr><td>李佩珊</td><td>承漢印刷</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="李佩珊 的證書">查看證書</a></td></tr>
+      <tr><td>陳悅欣</td><td>佳桓色彩科技</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="陳悅欣 的證書">查看證書</a></td></tr>
+      <tr><td>溫培鈞</td><td>勤實貿易</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="溫培鈞 的證書">查看證書</a></td></tr>
+      <tr><td>黃孝謙</td><td>鑫盛印刷設備</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="黃孝謙 的證書">查看證書</a></td></tr>
+      <tr><td>蔡萬中</td><td>信集界科技</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="蔡萬中 的證書">查看證書</a></td></tr>
+      <tr><td>楊盛佳</td><td>信集界科技</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="楊盛佳 的證書">查看證書</a></td></tr>
+      <tr><td>施又壬</td><td>得邑印刷</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="施又壬 的證書">查看證書</a></td></tr>
+      <tr><td>陳巧燕</td><td>野熊科技</td><td><a href="https://drive.google.com/file/d/1OiKCryS_q40dPNA7_XeJQ7tH6wEz--gh/view" target="_blank" title="陳巧燕 的證書">查看證書</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- G7 認證名單區塊 -->
+<section id="g7">
+  <h2 class="section-title" style="border-left-color: var(--ink-magenta);">G7 認證名單</h2>
+  <div class="cert-container cert-g7">
+    <table class="cert-table">
+      <thead>
+      <tr>
+        <th>姓名</th>
+        <th>單位 / 公司</th>
+        <th>E-mail</th>
+        <th>認證起始日</th>
+        <th>認證截止日</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>周梓浩</td><td>東明油墨股份有限公司</td><td>stefen@tlabcolor.com</td><td>2011-05-01</td><td>2028-03-16</td></tr>
+      <tr><td>張志勇</td><td></td><td>keepmind@hotmail.com</td><td>2025-01-08</td><td>2027-01-07</td></tr>
+      <tr><td>張景行</td><td>財團法人印刷創新科技研究發展中⼼</td><td>jack@ptri.org.tw</td><td>2017-06-01</td><td>2026-08-21</td></tr>
+      <tr><td>張錫本</td><td>深藍科技股份有限公司</td><td>eastwood@deepblue.com.tw</td><td>2022-01-01</td><td>2026-05-03</td></tr>
+      <tr><td>曾絲宜</td><td>世新大學</td><td>syyit@mail.shu.edu.tw</td><td>2019-01-01</td><td>2027-10-22</td></tr>
+      <tr><td>李瑩貞</td><td>攝影人數位影像製作股份有限公司</td><td>yingchenlee@pmi.com.tw</td><td>2022-01-01</td><td>2026-01-10</td></tr>
+      <tr><td>林奕全</td><td>力盛彩色印刷有限公司</td><td>zxc8512345@gmail.com</td><td>2020-09-01</td><td>2026-08-17</td></tr>
+      <tr><td>汪承諹</td><td>興台彩色印刷股份有限公司</td><td>qaz123698741@gmail.com</td><td>2019-01-01</td><td>2027-04-21</td></tr>
+      <tr><td>游筱惠</td><td>大輪創意國際有限公司 (iPSG)</td><td>angel.0619tw@gmail.com</td><td>2017-12-01</td><td>2028-05-14</td></tr>
+      <tr><td>溫乾隆</td><td>勤實貿易有限公司</td><td>ginowen@me.com</td><td>2012-04-01</td><td>2026-02-10</td></tr>
+      <tr><td>王昭棋</td><td>東明油墨股份有限公司</td><td>gina@tlabcolor.com</td><td>2022-01-01</td><td>2028-03-16</td></tr>
+      <tr><td>羅文紹</td><td>紅藍彩藝印刷股份有限公司</td><td>voip0919@gmail.com</td><td>2020-09-01</td><td>2027-01-26</td></tr>
+      <tr><td>翁世明</td><td>東莞協盈印刷有限公司</td><td>eric@skyprinting.cn</td><td>2017-06-01</td><td>2027-09-05</td></tr>
+      <tr><td>蘇鼎琨</td><td></td><td>dinkon77@gmail.com</td><td>2019-01-01</td><td>2027-12-12</td></tr>
+      <tr><td>郭世隆</td><td></td><td>fredkuo.mail@gmail.com</td><td>2020-09-01</td><td>2026-12-18</td></tr>
+      <tr><td>馬立懿</td><td>世新大學</td><td>liyima@mail.shu.edu.tw</td><td>2019-01-01</td><td>2027-10-22</td></tr>
+      <tr><td>黃俊凱</td><td>裕華彩印有限公司</td><td>kai@samsconn.com</td><td>2019-01-01</td><td>2026-02-12</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 頁尾 -->
+<footer>
+  <p>主辦單位：X-Rite Pantone | 執行單位：印刷傳播興才文教基金會</p>
+  <p>Copyright &copy; 2026 GCF All rights reserved.</p>
+</footer>
+
+</body>
+</html>

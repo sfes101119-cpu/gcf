@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>關於基金會 - GCF</title>
+  <style>
+    /* 從圖片提取的色票與共用設定 */
+    :root {
+      --paper-bg: #f5f4ef;
+      --ink-magenta: #e94e8f;
+      --ink-cyan: #26b2cc;
+      --ink-yellow: #f8df1c;
+      --ink-darkblue: #3d3e8e;
+      --ink-black: #2a2a2a;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; } /* 讓錨點連結有平滑捲動效果 */
+    body {
+      margin: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang TC', '微軟正黑體', sans-serif;
+      color: var(--ink-black);
+      background-color: var(--paper-bg);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.06'/%3E%3C/svg%3E");
+      line-height: 1.8;
+    }
+
+    /* 頂部功能列 */
+    .top-bar {
+      background-color: var(--ink-black);
+      color: #fff;
+      font-size: 0.85em;
+      padding: 8px 5%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 15px;
+    }
+    .top-bar a { color: #ddd; text-decoration: none; transition: color 0.2s; letter-spacing: 1px; }
+    .top-bar a:hover { color: var(--ink-yellow); }
+    .top-bar span { color: #777; font-size: 0.8em; }
+
+    /* 導覽列 */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 5%;
+      background: rgba(245, 244, 239, 0.95);
+      backdrop-filter: blur(5px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 2px solid var(--ink-black);
+    }
+    .logo {
+      font-size: 1.5em;
+      font-weight: 900;
+      text-decoration: none;
+      color: var(--ink-black);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    nav ul { list-style: none; display: flex; gap: 30px; margin: 0; padding: 0; }
+    nav a {
+      text-decoration: none;
+      color: var(--ink-black);
+      font-weight: bold;
+      position: relative;
+      padding-bottom: 5px;
+    }
+    nav a::after {
+      content: ''; position: absolute; width: 100%; height: 4px; bottom: 0; left: 0;
+      background-color: var(--ink-yellow); transform: scaleX(0); transform-origin: right;
+      transition: transform 0.3s ease; mix-blend-mode: multiply;
+    }
+    nav a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+    /* 版畫錯位疊影特效 */
+    .print-glitch {
+      position: relative; display: inline-block; font-weight: 900; color: var(--ink-black); z-index: 2;
+    }
+    .print-glitch::before, .print-glitch::after {
+      content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; z-index: -1; mix-blend-mode: multiply;
+    }
+    .print-glitch:hover::before { opacity: 0.9; transform: translate(-4px, -3px); color: var(--ink-cyan); }
+    .print-glitch:hover::after { opacity: 0.9; transform: translate(4px, 3px); color: var(--ink-magenta); }
+
+    /* ======== 修改後：頁面標題區塊 (滿版背景圖片與按鈕) ======== */
+    .page-header {
+      padding: 140px 5% 100px;
+      text-align: center;
+      border-bottom: 5px solid var(--ink-black);
+      position: relative;
+      background-image: url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1920&auto=format&fit=crop'); /* 背景圖片 */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+    /* 半透明遮罩確保文字清晰 */
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(250, 248, 245, 0.85);
+      z-index: 1;
+    }
+    .page-header h1 {
+      font-size: 3.5em;
+      margin: 0 0 30px 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* 圓角矩形按鈕列 (錨點選單) */
+    .anchor-nav {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .anchor-btn {
+      display: inline-block;
+      padding: 12px 30px;
+      background: #fff;
+      color: var(--ink-black);
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1em;
+      border: 2px solid var(--ink-black);
+      border-radius: 50px; /* 圓角矩形 */
+      box-shadow: 4px 4px 0px var(--ink-cyan);
+      transition: all 0.3s;
+    }
+    .anchor-btn:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 7px 7px 0px var(--ink-magenta);
+      background: var(--ink-black);
+      color: var(--paper-bg);
+    }
+    /* ========================================================== */
+
+    /* 頁面共用區塊 */
+    section {
+      padding: 80px 3%;
+      margin: 0 auto;
+      width: 100%;
+      scroll-margin-top: 100px; /* 避免錨點跳轉時被固定的導覽列擋住標題 */
+    }
+    .section-title { font-size: 2em; margin-bottom: 40px; font-weight: 900; border-left: 8px solid var(--ink-magenta); padding-left: 15px; }
+
+    /* 宗旨與內文區塊 */
+    .content-box {
+      background: #fff;
+      padding: 40px;
+      border: 2px solid var(--ink-black);
+      position: relative;
+      margin-bottom: 40px;
+      width: 100%;
+    }
+    .content-box::before {
+      content: ''; position: absolute; top: 10px; left: 10px; width: 100%; height: 100%;
+      background: var(--ink-cyan); border: 2px solid var(--ink-black); z-index: -1;
+    }
+    .content-box p { font-size: 1.15em; margin-bottom: 20px; }
+
+    .list-style { padding-left: 20px; font-size: 1.1em; }
+    .list-style li { margin-bottom: 10px; }
+
+    /* 董事會成員表格 Grid */
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+    }
+    .board-card {
+      background: var(--paper-bg);
+      border: 2px solid var(--ink-black);
+      padding: 20px;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .board-card::before {
+      content: ''; position: absolute; top: 6px; left: 6px; width: 100%; height: 100%;
+      background: var(--ink-yellow); border: 2px solid var(--ink-black); z-index: -1;
+    }
+    .board-card:hover { transform: translate(-3px, -3px); }
+    .board-card .role { font-size: 0.9em; font-weight: bold; color: var(--ink-magenta); display: block; margin-bottom: 5px; }
+    .board-card .name { font-size: 1.5em; font-weight: 900; margin-bottom: 10px; display: block; }
+    .board-card .desc { font-size: 0.95em; color: #555; }
+
+    /* 詩句區塊 */
+    .poem-quote {
+      font-size: 1.4em;
+      font-weight: bold;
+      text-align: center;
+      padding: 40px;
+      margin: 40px 0;
+      background: var(--ink-darkblue);
+      color: var(--paper-bg);
+      border: 2px solid var(--ink-black);
+      position: relative;
+    }
+    .poem-quote::before {
+      content: ''; position: absolute; top: 12px; left: 12px; width: 100%; height: 100%;
+      background: var(--ink-cyan); border: 2px solid var(--ink-black); z-index: -1;
+    }
+    .founder-name { text-align: right; margin-top: 20px; font-size: 1.2em; color: var(--ink-yellow); }
+
+    footer { background: var(--ink-black); color: #aaa; text-align: center; padding: 40px 20px; border-top: 5px solid var(--ink-black); }
+  </style>
+</head>
+<body>
+
+<!-- 頂部功能列 -->
+<div class="top-bar">
+  <a href="sitemap.html">網站導覽</a><span>|</span>
+  <a href="downloads.html">檔案下載</a><span>|</span>
+  <a href="faq.html">常見問答</a>
+</div>
+
+<!-- 導覽列 -->
+<nav>
+  <a href="index.html" class="logo">GCF FOCA</a>
+  <ul>
+    <li><a href="index.html">回首頁</a></li>
+    <li><a href="about.html">關於基金會</a></li>
+    <li><a href="courses.html">培訓課程</a></li>
+    <li><a href="blog.html">部落格</a></li>
+    <li><a href="cert.html">認證名單</a></li>
+    <li><a href="contact.html">聯絡我們</a></li>
+  </ul>
+</nav>
+
+<!-- ======== 頁面標題 & 錨點選單 ======== -->
+<header class="page-header">
+  <h1 class="print-glitch" data-text="關於基金會">關於基金會</h1>
+
+  <!-- 圓角矩形區塊導航按鈕 -->
+  <div class="anchor-nav">
+    <a href="#founder" class="anchor-btn">印刷推手</a>
+    <a href="#mission" class="anchor-btn">基金會宗旨</a>
+    <a href="#board" class="anchor-btn">董事會成員</a>
+    <a href="#services" class="anchor-btn">服務內容</a>
+  </div>
+</header>
+<!-- ===================================== -->
+
+<!-- 區塊一：興業育才 — 永遠的印刷推手 (加入 id="founder") -->
+<section id="founder">
+  <h2 class="section-title">興業育才 — 永遠的印刷推手</h2>
+
+  <div class="poem-quote">
+    人生難滿百，毋懷千歲憂。<br>凡事盡心力，與人為善謀。<br>
+    吃虧是積福，無悔無怨尤。<br>不計己得失，海天任遨遊。
+    <div class="founder-name">— 創會董事長 李興才教授</div>
+  </div>
+
+  <div style="font-size: 1.15em; line-height: 2; padding: 0 20px;">
+    <p>感念創會董事長李興才教授終身奉獻印刷教育，作育英才，為印刷學產界的永續發展作出重大貢獻，印刷傳播興才文教基金會特於 2022 年 8 月出版專書，表彰其成就與事蹟，成為後代學子的學習典範。</p>
+
+    <p>創會董事長李興才教授曾協助中國文化大學，改組印刷研究中心為中華學術院印刷工業研究所（十年後，改組為社團法人中華印刷科技學會）、創設華岡印刷廠、夜間部印刷學系、造紙印刷研究所、推廣教育印刷研究班。退休前，又籌資創設財團法人印刷傳播興才文教基金會，支援印刷教育、發展印刷傳播、促進兩岸三地印刷學術交流活動。李教授著作、主編、審訂出版之印刷書刊不下五十種。退休後二十年間，保持每年均出版一本書。特別在印刷史學方面，李教授新創「大印刷史觀」及「江源說」，擺脫書史學家長期將印書使誤認為印刷史的桎梏，主導編印出版古今中外第一部「中華印刷通史」，捍衛中華民族對印刷術的發明權。</p>
+
+    <p>李興才教授一生正是符應了學不厭，教不倦，仁且智的生命道路。自小聰穎過人，好學不倦，雖遭逢家庭巨大變故，卻能矢志向前不畏艱辛，弱冠即投入印刷事業行列，始終致力於教學著作研究，全心參與印刷行業的提振，名實相符地以「興業育才」為人生使命。身為世範，為人師表，身教言教，春風化雨，日日沐我心，也是我們大家心目中印刷界共同的夫子一永遠的李老師、李教授，或我們應尊稱他為當代「印刷先生」！</p>
+
+    <p style="text-align: right; font-weight: bold; margin-top: 30px; color: var(--ink-magenta);">
+      印刷傳播興才文教基金會 董事長 李天任
+    </p>
+  </div>
+</section>
+
+<!-- 區塊二：基金會宗旨 (加入 id="mission") -->
+<section id="mission">
+  <h2 class="section-title" style="border-left-color: var(--ink-cyan);">基金會宗旨</h2>
+  <div class="content-box">
+    <p>印刷傳播興才文教基金會取桃李滿天下的李興才教授之名，寓「興業育才」之意，於 1995 年 7 月 23 日正式對外宣告成立。面對當代資通訊科技瞬息萬變與傳播閱聽人習慣大幅改變的挑戰，依賴人力投入機械化操作與注重設備廠房投資的傳統印刷生產方式已然式微！</p>
+    <p>目前全數位化生產方式，著重創意設計，加上環保的考量，再再都對傳統印刷業產生鉅大衝擊，整體供應鏈也隨之丕然改變。本基金會深感責無旁貸，應該承擔起更多的責任，一方面傳承歷史，留下紀錄；一方面導入新知，架起創新的橋樑與平台。</p>
+    <p><strong>本會以發展印刷傳播為宗旨，依有關法令規定辦理下列業務：</strong></p>
+    <ul class="list-style">
+      <li>支援印刷傳播教育​，舉辦專題講座、研討會、講習會⋯等。</li>
+      <li>發揚印刷傳播文化，表彰著有成就之傑出人士。</li>
+      <li>培育印刷傳播人才，獎助學術研究。</li>
+      <li>促進印刷傳播科技，補助考察、訪問、展覽、會議活動。</li>
+      <li>研擬印刷傳播方案，建議相關單位採行。</li>
+      <li>出版印刷傳播書刊。</li>
+      <li>辦理與印刷傳播教育相關事項。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 區塊三：第十屆董事會成員 (加入 id="board") -->
+<section id="board">
+  <h2 class="section-title" style="border-left-color: var(--ink-yellow);">第十屆董事會成員 <span style="font-size: 0.5em; font-weight: normal; color: #777;">(按筆畫排序)</span></h2>
+  <div class="board-grid">
+    <div class="board-card"><span class="role">董事長</span><span class="name">李天任</span><span class="desc">文化大學 資訊傳播學系<br>教授</span></div>
+    <div class="board-card"><span class="role">董事</span><span class="name">李亦君</span><span class="desc">文化大學<br>學務長</span></div>
+    <div class="board-card"><span class="role">董事</span><span class="name">施春禧</span><span class="desc">科億印刷股份有限公司<br>總經理</span></div>
+    <div class="board-card"><span class="role">董事</span><span class="name">張中一</span><span class="desc">中華彩色印刷股份有限公司<br>董事長</span></div>
+    <div class="board-card"><span class="role">董事</span><span class="name">陳世芳</span><span class="desc">紅藍彩藝印刷股份有限公司<br>董事長</span></div>
+    <div class="board-card"><span class="role">董事</span><span class="name">陳政雄</span><span class="desc">興台彩色印刷股份有限公司<br>董事長</span></div>
+    <div class="board-card"><span class="role">董事</span><span class="name">趙仁蓉</span><span class="desc">網赫資訊科技股份有限公司<br>總經理</span></div>
+    <div class="board-card"><span class="role">董事</span><span class="name">魏裕昌</span><span class="desc">文化大學 資訊傳播學系<br>教授</span></div>
+    <div class="board-card"><span class="role">董事</span><span class="name">羅梅君</span><span class="desc">世新大學 資訊管理學系<br>教授</span></div>
+  </div>
+</section>
+
+<!-- 區塊四：服務與教育訓練內容 (加入 id="services") -->
+<section id="services">
+  <h2 class="section-title" style="border-left-color: var(--ink-magenta);">服務與教育訓練內容</h2>
+  <div class="content-box" style="background: var(--ink-darkblue); color: var(--paper-bg);">
+    <p>近年本會積極推廣資訊傳播科技之研發與應用，並針對色彩展現領域，協助廠商提升生產品質與加速國際市場接軌。過去 10 年間，國際圖文傳播標準認證的需求發展迅速，國內廠商對於相關色彩技術與國際認證標準卻是相對陌生。</p>
+    <p>本基金會自 2018 年，與美國 Idealliance 國際數位產業協會合作，成立 Idealliance Taiwan，為台灣印刷與包裝產業引入色彩管理技術與國際印刷標準認證之專業輔導，提供 G7 Expert 與 BrandQ Expert 專家認證培訓，以及 G7 Master 印刷廠認可服務，期能提升國內印刷包裝等相關業者之生產品質，進而提升台灣供應商的外銷競爭力。</p>
+    <p style="color: var(--ink-yellow); font-weight: bold; margin-top: 30px;">本基金會從事之相關服務與教育訓練內容如下：</p>
+    <ul class="list-style">
+      <li><strong>人員培訓</strong> – 國際印刷標準專家認證培訓、色彩生產複製管理與測量相關工作</li>
+      <li><strong>技術研發</strong> – 數位色彩校正與變數式依需數位印刷之技術推廣</li>
+      <li><strong>標準認證</strong> – <br>
+        - Idealliance G7 & BrandQ 國際色彩印刷供應商認證<br>
+        - 數位複印流程管控標準之研發與認證<br>
+        - 色彩管理專家認證培訓
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- 頁尾 -->
+<footer>
+  <p>主辦單位：X-Rite Pantone | 執行單位：印刷傳播興才文教基金會</p>
+  <p>Copyright &copy; 2026 GCF All rights reserved.</p>
+</footer>
+
+</body>
+</html>
